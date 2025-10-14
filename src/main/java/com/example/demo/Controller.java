@@ -15,9 +15,9 @@ public class Controller {
 
     //From here on will be routes that may be able to be used in theory,
     //still trying to figure out where the API calls are in the front end
-    @GetMapping("/vocabList/?") //might not be needed as this may be handled in the app
-    public String VocabList(int userId){
-        return "Vocab List for: " + userId;
+    @GetMapping("/vocabList") //might not be needed as this may be handled in the app
+    public String VocabList(){
+        return "Vocab List for: ";
     }
 
     @GetMapping("/word_def/?")
