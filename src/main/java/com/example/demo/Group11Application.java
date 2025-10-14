@@ -11,7 +11,7 @@ public class Group11Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Group11Application.class, args);
 	}
-	@GetMapping("/")
+	@GetMapping("/home")
 	public String index() {
 		return "This is the root page";
 	}
