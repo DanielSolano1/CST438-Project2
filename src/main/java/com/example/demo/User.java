@@ -12,7 +12,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // auto-increment PK
-    private Long userId;
+    private Integer userId;
 
     @Email @NotBlank
     @Column(nullable = false, unique = true, length = 255)
@@ -32,11 +32,11 @@ public class User {
 
     public User() {}
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
