@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Controller {
 
-    @GetMapping("/")//Basic route for testing stuff
-    public String home(){
-        return "Hello World";
-    }
+    //@GetMapping("/")//Basic route for testing stuff
+    //public String home(){
+    //    return "Hello World";
+    //}
 
     //From here on will be routes that may be able to be used in theory,
     //still trying to figure out where the API calls are in the front end
