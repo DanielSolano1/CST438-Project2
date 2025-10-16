@@ -16,7 +16,7 @@ Write-Host "Step 1: Building Gradle project (skip tests)..."
 Start-Process -FilePath "./gradlew.bat" -ArgumentList "clean", "build", "-x", "test" -Wait -NoNewWindow
 
 if (-Not (Test-Path "build/libs")) {
-    Write-Host "ERROR: Gradle build failed — JAR not found." 
+    Write-Host "ERROR: Gradle build failed - JAR not found." 
     exit 1
 }
 
@@ -77,3 +77,4 @@ Write-Host ""
 Write-Host "To view logs in real-time, run:" 
 Write-Host "   heroku logs --tail -a $HEROKU_APP" 
 Write-Host ""
+
