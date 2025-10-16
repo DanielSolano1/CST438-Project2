@@ -25,9 +25,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Step 5: Build single-arch Docker image
-Write-Host "`n🐳 Step 3: Building single-arch image for Heroku..."
+Write-Host "`n🐳 Step 3: Building single-arch image for Heroku (BuildKit disabled)......"
+$Env:DOCKER_BUILDKIT="0"
 $Env:DOCKER_DEFAULT_PLATFORM="linux/amd64"
 docker build -t registry.heroku.com/$HEROKU_APP/web .
+$Env:DOCKER_BUILDKIT="1"  # Re-enable afterward
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Docker build failed." -ForegroundColor Red
