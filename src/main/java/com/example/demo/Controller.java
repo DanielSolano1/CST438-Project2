@@ -10,7 +10,7 @@ public class Controller {
 
     @GetMapping("/")//Basic route for testing stuff
     public String home(){
-        return "Hello World Whats Up :) more";
+        return "Hello World Good Day";
     }
 
     //From here on will be routes that may be able to be used in theory,
