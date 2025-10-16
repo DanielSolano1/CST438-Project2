@@ -34,10 +34,11 @@ Write-Host "`nStep 4: Logging into Heroku container registry..."
 heroku container:login
 
 # Step 7: Push the image to Heroku
-Write-Host "`nStep 5: Pushing image to Heroku..."
-docker push registry.heroku.com/$HEROKU_APP/web
+Write-Host "`nStep 5: Building and pushing image to Heroku (linux/amd64)..."
+docker buildx build --platform linux/amd64 -t registry.heroku.com/$HEROKU_APP/web --push .
+
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Docker push failed." -ForegroundColor Red
+    Write-Host "Docker buildx push failed." -ForegroundColor Red
     exit 1
 }
 
