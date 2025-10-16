@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotBlank;
         name = "users",
         uniqueConstraints = @UniqueConstraint(columnNames = "email")
 )
+@Entity
 public class User {
 
     @Id
