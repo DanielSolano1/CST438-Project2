@@ -42,7 +42,7 @@ jar {
 }
 
 task stage(dependsOn: ['build']) {
-    doLast {
-        println "Staging for Heroku..."
-    }
+  doLast {
+    println "Staging for Heroku..."
+  }
 }
