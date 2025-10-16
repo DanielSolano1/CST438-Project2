@@ -7,3 +7,4 @@ public interface WordsInListRepository extends JpaRepository<WordsInList, Intege
     List<WordsInList> findByList_ListId(Integer listId);
     List<WordsInList> findByUser_UserId(Integer userId);
 }
+
