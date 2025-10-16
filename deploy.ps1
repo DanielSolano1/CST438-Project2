@@ -10,27 +10,45 @@ Write-Host "===============================`n"
 Write-Host "Step 1: Building Gradle project..."
 Start-Process -FilePath "./gradlew.bat" -ArgumentList "clean", "build", "-x", "test" -Wait -NoNewWindow
 
-# Step 3: Rebuild the Docker image
+# Step 3: Confirm JAR exists
+if (-Not (Test-Path "build/libs")) {
+    Write-Host "ERROR: No JAR found in build/libs. Did Gradle fail?" -ForegroundColor Red
+    exit 1
+}
+
+# Step 4: Rebuild the Docker image
 Write-Host "`nStep 2: Building Docker image..."
 docker build -t $HEROKU_APP .
 
-# Step 4: Tag image for Heroku registry
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Docker build failed." -ForegroundColor Red
+    exit 1
+}
+
+# Step 5: Tag image for Heroku registry
 Write-Host "`nStep 3: Tagging image for Heroku..."
 docker tag $HEROKU_APP registry.heroku.com/$HEROKU_APP/web
 
-# Step 5: Login to Heroku container registry
+# Step 6: Login to Heroku container registry
 Write-Host "`nStep 4: Logging into Heroku container registry..."
 heroku container:login
 
-# Step 6: Push the image to Heroku
+# Step 7: Push the image to Heroku
 Write-Host "`nStep 5: Pushing image to Heroku..."
 docker push registry.heroku.com/$HEROKU_APP/web
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Docker push failed." -ForegroundColor Red
+    exit 1
+}
 
-# Step 7: Release the image
+# Step 8: Release the image
 Write-Host "`nStep 6: Releasing image on Heroku..."
 heroku container:release web -a $HEROKU_APP
 
-# Step 8: Confirm app is live
-Write-Host "`nStep 7: Opening app and viewing logs..."
-Write-Host "`nHeroku logs (press Ctrl+C to stop):`n"
+# Step 9: Restart dyno to ensure latest image runs
+Write-Host "`nStep 7: Restarting Heroku dynos..."
+heroku ps:restart -a $HEROKU_APP
+
+# Step 10: Show logs
+Write-Host "`nStep 8: Viewing logs (press Ctrl+C to stop)...`n"
 heroku logs --tail -a $HEROKU_APP
