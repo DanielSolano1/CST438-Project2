@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.6'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.example'
@@ -9,28 +9,28 @@ version = '0.0.1-SNAPSHOT'
 description = 'Project 2 Group 11'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'com.mysql:mysql-connector-j'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.mysql:mysql-connector-j'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'com.h2database:h2'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 bootJar {
@@ -41,11 +41,22 @@ jar {
     enabled = false
 }
 
-task stage(dependsOn: ['build']) {
-  doFirst {
-        gradle.startParameter.excludedTaskNames += ['test']
-    }
+//
+// ✅ Custom Heroku Stage Task (skips tests during build)
+//
+tasks.register("stage") {
     doLast {
-        println "Staging for Heroku (tests skipped)..."
+        println("Staging for Heroku (tests skipped)...")
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            // Windows command
+            exec {
+                commandLine "cmd", "/c", "gradlew.bat", "clean", "build", "-x", "test"
+            }
+        } else {
+            // Linux / macOS command (Heroku)
+            exec {
+                commandLine "./gradlew", "clean", "build", "-x", "test"
+            }
+        }
     }
 }
