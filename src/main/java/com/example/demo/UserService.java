@@ -18,7 +18,7 @@ public class UserService {
         return repository.findAll();
     }
 
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getUserById(Integer id) {
         return repository.findById(id);
     }
 
@@ -33,7 +33,7 @@ public class UserService {
         return repository.save(user);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(Integer id) {
         repository.deleteById(id);
     }
 }
