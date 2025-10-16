@@ -25,8 +25,9 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Step 5: Build single-arch Docker image
-Write-Host "`nStep 3: Building Linux/amd64 image for Heroku..."
-docker buildx build --platform linux/amd64 --output=type=docker -t registry.heroku.com/$HEROKU_APP/web .
+Write-Host "`n🐳 Step 3: Building single-arch image for Heroku..."
+$Env:DOCKER_DEFAULT_PLATFORM="linux/amd64"
+docker build -t registry.heroku.com/$HEROKU_APP/web .
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Docker build failed." -ForegroundColor Red
