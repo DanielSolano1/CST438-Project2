@@ -40,3 +40,9 @@ bootJar {
 jar {
     enabled = false
 }
+
+task stage(dependsOn: ['build']) {
+    doLast {
+        println "Staging for Heroku..."
+    }
+}
