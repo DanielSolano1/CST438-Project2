@@ -32,6 +32,5 @@ heroku container:release web -a $HEROKU_APP
 
 # Step 8: Confirm app is live
 Write-Host "`nStep 7: Opening app and viewing logs..."
-Start-Process "https://dashboard.heroku.com/apps/$HEROKU_APP"
 Write-Host "`nHeroku logs (press Ctrl+C to stop):`n"
 heroku logs --tail -a $HEROKU_APP
