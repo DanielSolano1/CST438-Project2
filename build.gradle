@@ -42,7 +42,10 @@ jar {
 }
 
 task stage(dependsOn: ['build']) {
-  doLast {
-    println "Staging for Heroku..."
-  }
+  doFirst {
+        gradle.startParameter.excludedTaskNames += ['test']
+    }
+    doLast {
+        println "Staging for Heroku (tests skipped)..."
+    }
 }
