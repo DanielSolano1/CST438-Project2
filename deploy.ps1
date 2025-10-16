@@ -1,43 +1,50 @@
-# Heroku app name
+# ============================================
+# Heroku Docker Deployment Script
+# For: cst438-project2-group11
+# ============================================
+
 $HEROKU_APP = "cst438-project2-group11"
 
-# Step 1: Header
-Write-Host "`n==============================="
-Write-Host "Deploying Docker Image to Heroku"
-Write-Host "===============================`n"
+Write-Host ""
+Write-Host "==============================="
+Write-Host " Deploying Docker Image to Heroku" 
+Write-Host "==============================="
+Write-Host ""
 
-# Step 2: Clean and rebuild the Spring Boot JAR
-Write-Host "🧱 Step 1: Building Gradle project (skip tests)..."
+# Step 1: Clean and build Spring Boot JAR
+Write-Host "Step 1: Building Gradle project (skip tests)..." 
 Start-Process -FilePath "./gradlew.bat" -ArgumentList "clean", "build", "-x", "test" -Wait -NoNewWindow
 
-# Step 3: Verify JAR output exists
 if (-Not (Test-Path "build/libs")) {
-    Write-Host "ERROR: No JAR found in build/libs. Gradle build may have failed." -ForegroundColor Red
+    Write-Host "ERROR: Gradle build failed — JAR not found." 
     exit 1
 }
 
-# Step 4: Login to Heroku registry
+# Step 2: Login to Heroku container registry
 Write-Host "`nStep 2: Logging into Heroku container registry..."
 heroku container:login
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "Heroku login failed." -ForegroundColor Red
+    Write-Host "Heroku login failed."
     exit 1
 }
 
-# Step 5: Build single-arch Docker image
-Write-Host "`nStep 3: Building single-arch image for Heroku (BuildKit disabled)......"
-$Env:DOCKER_BUILDKIT="0"
-$Env:DOCKER_DEFAULT_PLATFORM="linux/amd64"
-docker build -t $HEROKU_APP .
-docker tag $HEROKU_APP registry.heroku.com/$HEROKU_APP/web
-$Env:DOCKER_BUILDKIT="1" # Re-enable afterward
+# Step 3: Build single-arch Docker image (BuildKit disabled)
+Write-Host "`nStep 3: Building single-arch image for Heroku (BuildKit disabled)..." 
+$Env:DOCKER_BUILDKIT = "0"
+$Env:DOCKER_DEFAULT_PLATFORM = "linux/amd64"
 
+docker build -t $HEROKU_APP .
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Docker build failed." -ForegroundColor Red
     exit 1
 }
 
-# Step 6: Push image to Heroku
+docker tag $HEROKU_APP registry.heroku.com/$HEROKU_APP/web
+
+# Re-enable BuildKit for later commands
+$Env:DOCKER_BUILDKIT = "1"
+
+# Step 4: Push image to Heroku
 Write-Host "`nStep 4: Pushing image to Heroku registry..."
 docker push registry.heroku.com/$HEROKU_APP/web
 if ($LASTEXITCODE -ne 0) {
@@ -45,7 +52,7 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# Step 7: Release image on Heroku
+# Step 5: Release image to Heroku app
 Write-Host "`nStep 5: Releasing image to Heroku app..."
 heroku container:release web -a $HEROKU_APP
 if ($LASTEXITCODE -ne 0) {
@@ -53,15 +60,20 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# Step 8: Restart dynos to ensure latest image is running
+# 🔁 Step 6: Restart dynos
 Write-Host "`nStep 6: Restarting Heroku dynos..."
 heroku ps:restart -a $HEROKU_APP
 
-# Step 9: Health check
-Write-Host "`nStep 7: Checking dyno status..."
+# Step 7: Check dyno status
+Write-Host "`nStep 7: Checking Heroku dyno status..."
 heroku ps -a $HEROKU_APP
 
-# Step 10: Open app + tail logs for verification
-Write-Host "`nStep 8: Opening app and tailing logs (Ctrl+C to exit)...`n"
-heroku open -a $HEROKU_APP
-heroku logs --tail -a $HEROKU_APP
+# Step 8: Show final success summary
+Write-Host ""
+Write-Host "Deployment complete!" 
+Write-Host "Your app should now be live at:" 
+Write-Host "https://$HEROKU_APP.herokuapp.com/" 
+Write-Host ""
+Write-Host "To view logs in real-time, run:" 
+Write-Host "   heroku logs --tail -a $HEROKU_APP" 
+Write-Host ""
