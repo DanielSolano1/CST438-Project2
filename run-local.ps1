@@ -29,6 +29,15 @@ docker rm project2-container 2>$null | Out-Null
 Write-Host "`nStep 4: Starting new container..."
 docker run -d --name project2-container -p 8080:8080 cst438-project2
 
+# Give the container a few seconds to start
+Write-Host "`nWaiting for Spring Boot app to start..."
+Start-Sleep -Seconds 5
+
+# Step 6: Open browser automatically
+Write-Host "`nStep 5: Opening app in Chrome..."
+Start-Process "chrome.exe" "http://localhost:8080"
+
+
 # Step 6: Show logs
-Write-Host "`nStep 5: Showing logs (Ctrl+C to exit)...`n"
+Write-Host "`nStep 6: Showing logs (Ctrl+C to exit)...`n"
 docker logs -f project2-container
