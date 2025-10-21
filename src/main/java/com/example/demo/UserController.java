@@ -21,12 +21,29 @@ public class UserController {
         return service.getAllUsers();
     }
 
+    //query by email for locally it would be for most of these routes
+    // curl http://localhost:8080/api/users
+    //then we just add the thing we want
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         return service.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/email")
+    public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
+        return service.getUserByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    @GetMapping("/login")
+    public ResponseEntity<User> getUserByEmailAndPassword(@RequestParam String email, @RequestParam String password) {
+        return service.getUserByEmailAndPassword(email, password)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 
     @PostMapping
     public ResponseEntity<?> registerUser(@RequestBody User user) {
