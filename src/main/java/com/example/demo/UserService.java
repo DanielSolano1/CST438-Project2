@@ -1,6 +1,8 @@
 package com.example.demo;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +15,7 @@ public class UserService {
     public UserService(UserRepository repository) {
         this.repository = repository;
     }
-
+    // all of these are queries basically we need for functions
     public List<User> getAllUsers() {
         return repository.findAll();
     }
@@ -25,8 +27,14 @@ public class UserService {
     public Optional<User> getUserByEmail(String email) {
         return repository.findByEmail(email);
     }
+    public Optional<User> getUserByPassword(String password) {
+        return repository.findByPassword(password);
+    }
+    public Optional<User> getUserByEmailAndPassword(String email, String password) {
+        return repository.findByEmailAndPassword(email, password);
+    }
 
-    public User createUser(User user) {
+        public User createUser(User user) {
         if (repository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email already registered");
         }
