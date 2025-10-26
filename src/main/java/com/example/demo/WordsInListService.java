@@ -38,6 +38,12 @@ public class WordsInListService {
         VocabList list = vocabListRepository.findById(listId)
                 .orElseThrow(() -> new IllegalArgumentException("List not found"));
 
+        List<WordsInList> existing = wordsInListRepository.findByList_ListId(listId);
+        boolean duplicate = existing.stream().anyMatch(w -> w.getWord().equalsIgnoreCase(word));
+        if (duplicate) {
+            throw new IllegalArgumentException("Word already exists in this list");
+        }
+
         WordsInList entry = new WordsInList();
         entry.setUser(user);
         entry.setList(list);
