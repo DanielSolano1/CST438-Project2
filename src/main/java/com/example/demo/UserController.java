@@ -1,14 +1,17 @@
 package com.example.demo;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "*") // allow all frontend access
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    //The HTTP Request GET POST PUT methods for the users
 
     private final UserService service;
 
@@ -35,14 +38,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<User> getUserByEmailAndPassword(
-            @RequestParam String email,
-            @RequestParam String password) {
-        return service.getUserByEmailAndPassword(email, password)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+
 
     // ✅ New: Reset password endpoint
     @PutMapping("/reset-password")
@@ -63,6 +59,15 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String password = body.get("password");
+        return service.getUserByEmailAndPassword(email, password)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
     @DeleteMapping("/{id}")
