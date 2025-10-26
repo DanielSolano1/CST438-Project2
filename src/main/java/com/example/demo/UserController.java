@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*") // allow frontend access
+@CrossOrigin(origins = "*") // allow all frontend access
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -21,29 +21,39 @@ public class UserController {
         return service.getAllUsers();
     }
 
-    //query by email for locally it would be for most of these routes
-    // curl http://localhost:8080/api/users
-    //then we just add the thing we want
-
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Integer id) {
         return service.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
     @GetMapping("/email")
     public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
         return service.getUserByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
     @GetMapping("/login")
-    public ResponseEntity<User> getUserByEmailAndPassword(@RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<User> getUserByEmailAndPassword(
+            @RequestParam String email,
+            @RequestParam String password) {
         return service.getUserByEmailAndPassword(email, password)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // ✅ New: Reset password endpoint
+    @PutMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
+        try {
+            service.resetPassword(email, newPassword);
+            return ResponseEntity.ok("Password updated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping
     public ResponseEntity<?> registerUser(@RequestBody User user) {
