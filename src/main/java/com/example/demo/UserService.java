@@ -41,6 +41,14 @@ public class UserService {
         return repository.save(user);
     }
 
+    public void resetPassword(String email, String newPassword) {
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+        user.setPassword(newPassword);
+        repository.save(user);
+    }
+
+
     public void deleteUser(Integer id) {
         repository.deleteById(id);
     }
