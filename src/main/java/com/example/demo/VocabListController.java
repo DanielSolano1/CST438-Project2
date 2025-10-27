@@ -3,6 +3,7 @@ package com.example.demo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*")
@@ -46,6 +47,22 @@ public class VocabListController {
     public ResponseEntity<Void> deleteList(@PathVariable Integer id) {
         vocabListService.deleteList(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // 🔹 NEW: GET the “history” list id (first list by ASC) for a user
+    // Returns 200 { "listId": number } or 404 if user has no lists
+    @GetMapping("/user/{userId}/vocab-history")
+    public ResponseEntity<Map<String, Integer>> getVocabHistory(@PathVariable Integer userId) {
+        return vocabListService.findUserHistoryListId(userId)
+                .map(id -> ResponseEntity.ok(Map.of("listId", id)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 🔹 NEW (optional): create “History” if missing and return its id
+    @PostMapping("/user/{userId}/vocab-history")
+    public ResponseEntity<Map<String, Integer>> createVocabHistoryIfMissing(@PathVariable Integer userId) {
+        Integer id = vocabListService.getOrCreateHistoryListId(userId);
+        return ResponseEntity.ok(Map.of("listId", id));
     }
 
     // Simple DTO to handle request body

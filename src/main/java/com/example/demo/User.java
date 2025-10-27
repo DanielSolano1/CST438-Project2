@@ -4,6 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+
+
+//Layer	        What it does	        When to add methods
+//================================================================================
+//Repository	Talks directly to DB	Only when you need a new query
+//Service	    Business logic(calls repo)	When you need a new logical operation
+//Controller	HTTP endpoint	        When you want to expose something via API
+
 @Table(
         name = "users",
         uniqueConstraints = @UniqueConstraint(columnNames = "email")

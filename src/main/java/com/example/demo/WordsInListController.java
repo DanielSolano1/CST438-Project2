@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -43,7 +44,40 @@ public class WordsInListController {
         return ResponseEntity.noContent().build();
     }
 
-    // DTO to receive request body
+
+    @GetMapping
+    public List<WordsInList> getAllWords() {
+        return wordsInListService.getAllWords();
+    }
+
+    // Get words by user
+    @GetMapping("/user/{userId}")
+    public List<WordsInList> getWordsByUser(@PathVariable Integer userId) {
+        return wordsInListService.getWordsByUser(userId);
+    }
+
+    // Alternate POST style: include listId in the path
+    // Keeps your original POST as-is; this is just another option for the frontend.
+    @PostMapping("/list/{listId}")
+    public ResponseEntity<?> addWordToListPathParam(
+            @PathVariable Integer listId,
+            @RequestBody WordPathRequest request
+    ) {
+        try {
+            WordsInList entry = wordsInListService.addWordToList(
+                    request.getUserId(),
+                    listId,
+                    request.getWord(),
+                    request.getDefinition()
+            );
+            // Use 201 for creation on this variant
+            return ResponseEntity.status(HttpStatus.CREATED).body(entry);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // DTO to receive request body (existing)
     public static class WordRequest {
         private Integer userId;
         private Integer listId;
@@ -54,6 +88,20 @@ public class WordsInListController {
         public void setUserId(Integer userId) { this.userId = userId; }
         public Integer getListId() { return listId; }
         public void setListId(Integer listId) { this.listId = listId; }
+        public String getWord() { return word; }
+        public void setWord(String word) { this.word = word; }
+        public String getDefinition() { return definition; }
+        public void setDefinition(String definition) { this.definition = definition; }
+    }
+
+    // 🆕 DTO for the path-based POST (no listId in body needed)
+    public static class WordPathRequest {
+        private Integer userId;
+        private String word;
+        private String definition;
+
+        public Integer getUserId() { return userId; }
+        public void setUserId(Integer userId) { this.userId = userId; }
         public String getWord() { return word; }
         public void setWord(String word) { this.word = word; }
         public String getDefinition() { return definition; }
