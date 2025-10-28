@@ -31,6 +31,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    testLogging {
+    events "PASSED", "FAILED", "SKIPPED"
+    }
 }
 
 bootJar {
@@ -42,7 +45,7 @@ jar {
 }
 
 //
-// ✅ Custom Heroku Stage Task (skips tests during build)
+// Heroku Stage Task (skips tests during build)
 //
 tasks.register("stage") {
     doLast {
