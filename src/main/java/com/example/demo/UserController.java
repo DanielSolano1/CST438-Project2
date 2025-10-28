@@ -1,16 +1,21 @@
 package com.example.demo;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.*;
 
 @CrossOrigin(origins = "*") // allow all frontend access
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    //The HTTP Request GET POST PUT methods for the users
 
     private final UserService service;
+
 
     public UserController(UserService service) {
         this.service = service;
@@ -35,14 +40,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<User> getUserByEmailAndPassword(
-            @RequestParam String email,
-            @RequestParam String password) {
-        return service.getUserByEmailAndPassword(email, password)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
+
 
     // ✅ New: Reset password endpoint
     @PutMapping("/reset-password")
@@ -65,9 +63,30 @@ public class UserController {
         }
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        String password = body.get("password");
+        return service.getUserByEmailAndPassword(email, password)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         service.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/security-question")
+    public ResponseEntity<?> getSecurityQuestion(@RequestParam String email) {
+        Optional<User> user = service.getUserByEmail(email);
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+
+        Map<String, String> response = new HashMap<>();
+        response.put("securityQuestion", user.get().getSecurityQuestion());
+        return ResponseEntity.ok(response);
     }
 }

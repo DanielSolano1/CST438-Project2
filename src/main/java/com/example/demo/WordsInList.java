@@ -1,8 +1,12 @@
 package com.example.demo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Table(
         name = "words_in_list",
@@ -18,11 +22,13 @@ public class WordsInList {
     // Many words belong to one user
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false)
+    @JsonIgnore // prevent lazy proxy from being serialized
     private User user;
 
     // Many words belong to one vocab list
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "list_id", referencedColumnName = "listId", nullable = false)
+    @JsonIgnore // prevent lazy proxy from being serialized
     private VocabList list;
 
     @NotBlank
@@ -30,12 +36,23 @@ public class WordsInList {
     private String word;
 
     @NotBlank
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 255) // keep as-is; switch to TEXT if you need longer defs
     private String definition;
 
     public WordsInList() {}
 
-    // getters & setters
+    // ---------- JSON-friendly ID exposers (so the frontend still gets userId/listId) ----------
+    @JsonProperty("userId")
+    public Integer getUserId() {
+        return user != null ? user.getUserId() : null;
+    }
+
+    @JsonProperty("listId")
+    public Integer getListId() {
+        return list != null ? list.getListId() : null;
+    }
+
+    // ---------- getters & setters ----------
     public Integer getWordId() {
         return wordId;
     }

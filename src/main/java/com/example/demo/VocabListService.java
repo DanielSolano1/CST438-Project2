@@ -41,4 +41,22 @@ public class VocabListService {
     public void deleteList(Integer id) {
         vocabListRepository.deleteById(id);
     }
+    // NEW: first listId for user (history analogue)
+    public Optional<Integer> findUserHistoryListId(Integer userId) {
+        return vocabListRepository
+                .findFirstByUser_UserIdOrderByListIdAsc(userId)
+                .map(VocabList::getListId);
+    }
+
+    // NEW (optional): create a "History" list if none exists, and return its id
+    public Integer getOrCreateHistoryListId(Integer userId) {
+        return findUserHistoryListId(userId).orElseGet(() -> {
+            VocabList created = createList(userId, "History");
+            return created.getListId();
+        });
+    }
+
+    public boolean userOwnsList(Integer userId, Integer listId) {
+        return vocabListRepository.existsByListIdAndUser_UserId(listId, userId);
+    }
 }
