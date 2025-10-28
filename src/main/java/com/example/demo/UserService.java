@@ -1,8 +1,6 @@
 package com.example.demo;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +9,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository repository;
+    private final VocabListService vocabListService;
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, VocabListService vocabListService) {
         this.repository = repository;
+        this.vocabListService = vocabListService;
     }
     // all of these are queries basically we need for functions
     public List<User> getAllUsers() {
@@ -34,11 +34,14 @@ public class UserService {
         return repository.findByEmailAndPassword(email, password);
     }
 
-        public User createUser(User user) {
+    public User createUser(User user) {
         if (repository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Email already registered");
         }
-        return repository.save(user);
+        User created = repository.save(user);
+        vocabListService.createList(created.getUserId(), "Vocab Word History");
+
+        return created;
     }
 
     public void resetPassword(String email, String newPassword) {
