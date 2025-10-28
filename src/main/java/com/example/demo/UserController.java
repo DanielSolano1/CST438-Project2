@@ -41,7 +41,6 @@ public class UserController {
     }
 
 
-
     // ✅ New: Reset password endpoint
     @PutMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam String email, @RequestParam String newPassword) {
